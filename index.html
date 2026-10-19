@@ -1342,10 +1342,21 @@ button{font-family:inherit;border:0;background:none;cursor:pointer}
 
   /* ---------- 路线绘制 + 节点点亮 ---------- */
   var routeLen = 0, fracs = {};
+  /* 兜底：路线动画不可用时直接点亮全部节点 */
+  function showAllPins() {
+    $('.pin').forEach(function (p) { p.classList.add('on'); });
+  }
   function initRoute() {
     var prog = $('#routeProg'), stage = $('#mapStage');
-    if (!prog || !stage) return;
-    routeLen = prog.getTotalLength();
+    if (!prog || !stage) { showAllPins(); return; }
+    /* 兜底：SVG path 接口异常时直接显示全部节点，保证互动点永远可用 */
+    if (typeof prog.getTotalLength !== 'function' || typeof prog.getPointAtLength !== 'function') {
+      showAllPins();
+      return;
+    }
+    try {
+      routeLen = prog.getTotalLength();
+    } catch (e) { showAllPins(); return; }
     prog.style.strokeDasharray = routeLen;
     prog.style.strokeDashoffset = routeLen;
 
