@@ -1341,7 +1341,7 @@ button{font-family:inherit;border:0;background:none;cursor:pointer}
   }
 
   /* ---------- 路线绘制 + 节点点亮 ---------- */
-  var routeLen = 0, fracs = {};
+  var routeLen = 0, fracs = {}, routeOK = false;
   /* 兜底：路线动画不可用时直接点亮全部节点 */
   function showAllPins() {
     $('.pin').forEach(function (p) { p.classList.add('on'); });
@@ -1389,6 +1389,7 @@ button{font-family:inherit;border:0;background:none;cursor:pointer}
     window.addEventListener('scroll', update, { passive: true });
     window.addEventListener('resize', update);
     update();
+    routeOK = true;
   }
 
   /* ---------- 弹层 ---------- */
@@ -1601,6 +1602,8 @@ button{font-family:inherit;border:0;background:none;cursor:pointer}
     [renderPeople, initReveal, initCounters, initRoute, initMapZoom, initModal, initBGM, initScrollUI, initQrCode].forEach(function (fn) {
       try { fn(); } catch (e) { if (window.console && console.warn) console.warn('init skip:', fn.name, e); }
     });
+    /* 最终保底：3秒后路线动画仍未就绪则直接点亮全部节点，保证互动点可用 */
+    setTimeout(function () { if (!routeOK) showAllPins(); }, 3000);
   });
 })();
 
