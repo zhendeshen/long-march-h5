@@ -391,8 +391,11 @@
       var passed = (vh * 0.72 - r.top);
       var p = Math.max(0, Math.min(1, passed / total));
       prog.style.strokeDashoffset = routeLen * (1 - p);
+      /* 地图顶部进入视口 3/4 高度后，一次性点亮全部节点，确保互动点可靠可见可点 */
+      var revealAll = r.top < vh * 0.75;
       Object.keys(fracs).forEach(function (k) {
-        if (pins[k] && p >= fracs[k] + 0.015) pins[k].classList.add('on');
+        if (!pins[k]) return;
+        if (revealAll || p >= fracs[k] + 0.015) pins[k].classList.add('on');
       });
     }
     window.addEventListener('scroll', update, { passive: true });
