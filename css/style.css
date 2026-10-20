@@ -179,9 +179,9 @@ button{font-family:inherit;border:0;background:none;cursor:pointer}
 .gorge path{opacity:.8}
 
 /* ---- 节点 ---- */
-.pin{position:absolute;transform:translate(-50%,-50%) scale(0);opacity:0;
+.pin{position:absolute;transform:translate(-50%,-50%) scale(1);opacity:1;
   transition:transform .5s cubic-bezier(.34,1.56,.64,1),opacity .4s;z-index:5;
-  display:grid;justify-items:center}
+  display:grid;justify-items:center;cursor:pointer}
 .pin.on{opacity:1;transform:translate(-50%,-50%) scale(1)}
 .pin i{width:20px;height:20px;border-radius:50%;background:radial-gradient(circle at 32% 30%,#d9534a,var(--red) 70%);
   border:2.5px solid #fbf1da;box-shadow:0 0 0 3px rgba(154,30,35,.35),0 4px 10px rgba(0,0,0,.3);position:relative}
