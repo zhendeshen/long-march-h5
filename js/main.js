@@ -272,8 +272,31 @@
   };
 
   /* ---------- 工具 ---------- */
-  function $(s, p) { return (p || document).querySelector(s); }
-  function $$(s, p) { return Array.prototype.slice.call((p || document).querySelectorAll(s)); }
+  /* 取元素：优先 querySelector；若被宿主环境覆写/破坏，则回退到原生 API，确保任何环境下都能拿到元素 */
+  function attrMatch(root, name) {
+    var all = root.getElementsByTagName('*'), out = [];
+    for (var i = 0; i < all.length; i++) {
+      if (all[i].hasAttribute && all[i].hasAttribute(name)) out.push(all[i]);
+    }
+    return out;
+  }
+  function $(s, p) {
+    p = p || document;
+    try { var el = p.querySelector ? p.querySelector(s) : null; if (el) return el; } catch (e) {}
+    if (s.charAt(0) === '#') { var byId = document.getElementById(s.slice(1)); if (byId) return byId; }
+    if (s.charAt(0) === '.') { var cls = document.getElementsByClassName(s.slice(1)); if (cls && cls.length) return cls[0]; }
+    var tag = document.getElementsByTagName(s.replace(/^[.#]/, ''));
+    return (tag && tag.length) ? tag[0] : null;
+  }
+  function $$(s, p) {
+    p = p || document;
+    try { if (p.querySelectorAll) return Array.prototype.slice.call(p.querySelectorAll(s)); } catch (e) {}
+    if (s.charAt(0) === '.') return Array.prototype.slice.call(document.getElementsByClassName(s.slice(1)));
+    if (s.charAt(0) === '#') { var el = document.getElementById(s.slice(1)); return el ? [el] : []; }
+    var m = /^\[([\w-]+)\]$/.exec(s);
+    if (m) return attrMatch(p, m[1]);
+    return Array.prototype.slice.call(document.getElementsByTagName(s));
+  }
 
   /* ---------- 人物志渲染 ---------- */
   function renderPeople() {
